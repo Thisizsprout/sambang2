@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>실시간 상태 모니터링</title>
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -25,9 +28,13 @@
             }
         }
     </script>
+
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .modern-font {
             font-family: 'Outfit', sans-serif;
@@ -52,7 +59,6 @@
             --accent-sub: rgba(241, 245, 249, 0.9);
         }
 
-        /* 글래스모피즘 (고정형 디자인으로 안정감 부여) */
         .glass-card {
             background-color: var(--bg-card);
             backdrop-filter: blur(24px);
@@ -68,19 +74,18 @@
             border-bottom: 1px solid var(--border-card);
         }
 
-        /* 언어 선택 및 버튼 UI 스타일 통일 */
         .ui-control-box {
             background-color: var(--accent-sub);
             border: 1px solid var(--border-card);
             color: var(--text-main);
-            transition: border-color 0.2s ease, background-color 0.2s ease;
+            transition: border-color 0.2s ease;
         }
         .ui-control-box:hover {
             border-color: var(--accent-warm);
         }
     </style>
 </head>
-<body style="background-color: var(--bg-main); color: var(--text-main);" class="min-h-screen flex flex-col justify-between transition-colors duration-300">
+<body class="min-h-screen flex flex-col justify-between">
 
     <!-- Header -->
     <header class="sticky top-0 z-50 glass-header">
@@ -96,7 +101,7 @@
             </div>
 
             <div class="flex items-center space-x-3">
-                <!-- 통일된 UI 스타일이 적용된 4개국어 선택 드롭다운 -->
+                <!-- 언어 선택 드롭다운 -->
                 <div class="relative">
                     <select id="langSelect" class="ui-control-box text-xs rounded-xl px-4 py-2.5 outline-none cursor-pointer font-medium appearance-none pr-9 shadow-sm">
                         <option value="ko" style="background: var(--bg-main); color: var(--text-main);">🇰🇷 한국어</option>
@@ -120,7 +125,7 @@
     <!-- Main Grid -->
     <main class="max-w-6xl mx-auto px-6 py-8 flex-grow grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full">
         
-        <!-- Left: Webcam -->
+        <!-- Left: Webcam Section -->
         <div class="lg:col-span-7 flex flex-col space-y-6">
             <div class="glass-card rounded-3xl p-6">
                 <div class="flex items-center justify-between mb-5">
@@ -129,7 +134,6 @@
                         <span data-i18n="feedTitle">실시간 카메라 영상</span>
                     </h2>
                     
-                    <!-- 카메라 ON/OFF 버튼 -->
                     <button id="camToggleBtn" onclick="toggleCamera()" class="bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-600 hover:to-indigo-600 text-white font-semibold px-5 py-2.5 rounded-xl transition shadow-md text-xs flex items-center space-x-2 active:scale-95 cursor-pointer">
                         <i id="camBtnIcon" class="fa-solid fa-play"></i>
                         <span id="camBtnText" data-i18n="startBtn">카메라 시작하기</span>
@@ -151,7 +155,7 @@
             </div>
         </div>
 
-        <!-- Right: Status Display -->
+        <!-- Right: Status Section -->
         <div class="lg:col-span-5 flex flex-col space-y-6">
             <div class="glass-card rounded-3xl p-6 flex flex-col items-center text-center">
                 <h2 class="modern-font text-sm font-bold flex items-center space-x-2 mb-6 w-full justify-start tracking-wide">
@@ -160,7 +164,6 @@
                 </h2>
 
                 <div class="relative w-48 h-48 my-4 flex items-center justify-center">
-                    <!-- 고정형 테두리 (불필요한 애니메이션 제거) -->
                     <div class="absolute inset-0 rounded-full border-4 border-dashed border-sky-400/20"></div>
                     <div class="absolute inset-3 rounded-full flex flex-col items-center justify-center p-4 shadow-inner" style="background-color: var(--accent-sub);">
                         <span class="text-[11px] font-semibold uppercase opacity-60 mb-1 tracking-wider" data-i18n="currentState">현재 상태</span>
@@ -169,11 +172,10 @@
                 </div>
 
                 <div class="w-full mt-4 pt-4 border-t text-xs text-left opacity-60 leading-relaxed" style="border-color: var(--border-card);" data-i18n="guideText">
-                    * 카메라 화면을 분석하여 해당하는 상태(예: 적음, 많음)를 표시합니다.
+                    * 카메라 화면을 분석하여 해당하는 상태를 표시합니다.
                 </div>
             </div>
 
-            <!-- 하단 상태 목록 칩 -->
             <div id="label-container" class="glass-card rounded-2xl p-4 grid grid-cols-2 gap-3">
                 <div class="col-span-2 text-center py-4 text-xs opacity-50 font-medium" data-i18n="waitingModel">
                     모델 로딩 대기 중...
@@ -203,7 +205,7 @@
                 statusActive: "분석 작동 중",
                 analyticsTitle: "현재 인식 상태",
                 currentState: "현재 상태",
-                guideText: "* 카메라 화면을 분석하여 해당하는 상태(예: 적음, 많음)를 표시합니다.",
+                guideText: "* 카메라 화면을 분석하여 해당하는 상태를 표시합니다.",
                 waitingModel: "모델 로딩 대기 중...",
                 errorMsg: "카메라 권한을 확인하거나 장치를 연결할 수 없습니다."
             },
@@ -217,7 +219,7 @@
                 statusActive: "Monitoring",
                 analyticsTitle: "Current Status",
                 currentState: "Status",
-                guideText: "* Displays the detected state (e.g., low, high) in real time.",
+                guideText: "* Displays the detected state in real time.",
                 waitingModel: "Waiting for model...",
                 errorMsg: "Could not access camera or load model."
             },
@@ -231,9 +233,9 @@
                 statusActive: "分析中",
                 analyticsTitle: "現在の認識状態",
                 currentState: "現在の状態",
-                guideText: "* カメラ映像を分析し、該当する状態（少ない、多いなど）を表示します。",
+                guideText: "* カメラ映像を分析し、状態を表示します。",
                 waitingModel: "モデルの読み込み待ち...",
-                errorMsg: "カメラへのアクセスまたはモデルの読み込みに失敗しました。"
+                errorMsg: "カメラへのアクセスに失敗しました。"
             },
             zh: {
                 headerSub: "实时状态面板",
@@ -245,7 +247,7 @@
                 statusActive: "监控中",
                 analyticsTitle: "当前识别状态",
                 currentState: "当前状态",
-                guideText: "* 分析相机画面并显示对应状态（例如：少、多）。",
+                guideText: "* 分析相机画面并显示对应状态。",
                 waitingModel: "等待模型加载中...",
                 errorMsg: "无法访问相机或加载模型。"
             }
@@ -265,28 +267,16 @@
                 }
             });
             
-            // 카메라 상태에 따라 버튼 및 배지 텍스트 실시간 동기화
             if (isCameraOn) {
                 document.getElementById('camBtnText').innerText = translations[currentLang].stopBtn;
                 document.getElementById('statusText').innerText = translations[currentLang].statusActive;
             } else {
                 document.getElementById('camBtnText').innerText = translations[currentLang].startBtn;
                 document.getElementById('statusText').innerText = translations[currentLang].statusStandby;
-                
-                // 플레이스홀더 문구 업데이트
-                const placeholderP = document.querySelector('#placeholderText p');
-                if (placeholderP) {
-                    placeholderP.innerText = translations[currentLang].placeholder;
-                }
-                
-                // 모델 대기 문구 업데이트
-                const waitingEl = document.querySelector('#label-container div');
-                if (waitingEl && !isModelLoaded) {
-                    waitingEl.innerText = translations[currentLang].waitingModel;
-                }
             }
         }
 
+        // 테마 토글
         const themeToggleBtn = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
         const htmlElement = document.documentElement;
@@ -333,7 +323,6 @@
                     isModelLoaded = true;
                 }
 
-                // 버그 수정: 재시작 시 스트림 충돌을 방지하기 위해 웹캠 인스턴스 정비 후 셋업
                 if (!webcam) {
                     webcam = new tmImage.Webcam(420, 315, true);
                     await webcam.setup();
